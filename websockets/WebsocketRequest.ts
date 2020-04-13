@@ -69,7 +69,7 @@ abstract class WebsocketRequest {
                 console.log(e)
             })
     }
-    public post(postData: object) : Promise {
+    public post(postData: object | string) : Promise {
 
         if (!this.postType) {
             this.handleError("Missing Post Type");

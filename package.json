@@ -5,15 +5,11 @@
   "license": "MIT",
   "dependencies": {
     "@types/node": "^13.11.1",
-    "@zoomus/websdk": "^1.7.5",
     "bluebird": "^3.7.2",
-    "express": "^4.17.1",
-    "express-logging": "^1.1.1",
-    "logops": "^2.1.1",
     "ws": "^7.2.1"
   },
   "scripts": {
-    "start": "ts-node web.ts"
+    "start": "ts-node app.ts"
   },
   "devDependencies": {
     "ts-node": "^8.8.2",
