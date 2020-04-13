@@ -11,7 +11,7 @@ export default class Active extends WebsocketRequest {
     protected handleMessage(message: string): string {
         let response = JSON.parse(message).activeProgram;
         if (response) {
-           return response.activeProgramId;
+            return response.activeProgramId;
         }
     }
 

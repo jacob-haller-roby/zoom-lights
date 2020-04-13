@@ -24,7 +24,6 @@ abstract class WebsocketRequest {
         if (this.ws === undefined) {
             this.ws = new WebSocket("ws://" + this.host + ":81");
             this.ws.on('close', this.handleClose);
-            this.ws.on('error', this.handleError);
             this.ws.binaryType = "arraybuffer";
         }
         return this.ws;
@@ -40,13 +39,12 @@ abstract class WebsocketRequest {
             }
         }
     }
-    private handleError(err: string): void {
-        //TODO:
-        console.log(err);
-        console.log('handle error');
-    }
     private handleClose(): void {
-        //TODO:
+        console.log("Closing Websocket Connection");
+    }
+
+    protected handleError(error: string) {
+        console.error("Error: " + error);
     }
 
     public get() : Promise {
@@ -60,22 +58,20 @@ abstract class WebsocketRequest {
         ws.on('open', () => ws.send(JSON.stringify(frame)));
 
         return new Promise((resolve, reject) => {
-            setTimeout(reject, 5000);
+            setTimeout(() => reject("Operation Timed Out"), 5000);
             ws.on('message', this.getHandleMessage(resolve));
+            ws.on('error', reject);
         })
-            .finally(() => ws.close())
-            .catch(e => {
-                console.log('caught error');
-                console.log(e)
-            })
+            .catch(this.handleError)
+            .finally(() => ws.close());
     }
     public post(postData: object | string) : Promise {
 
         if (!this.postType) {
-            this.handleError("Missing Post Type");
-            return new Promise.resolve();
+            return Promise.reject("Missing Post Type");
         }
         if(this.result !== undefined) {
+            console.log("returning cached result")
             return Promise.resolve(this.result);
         }
 
