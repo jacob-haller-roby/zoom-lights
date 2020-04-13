@@ -6,9 +6,10 @@ import logger = require('logops');
 
 import Vars from './websockets/Vars'
 import Programs from "./websockets/Programs";
+import ZoomCheck from "./ZoomCheck";
 
 
-const port = 3000;
+const port = 3001;
 
 const get = (req: Request, res: Response, SubClass: new() => WebsocketRequest) => {
     res.setHeader('Content-Type', 'application/json');
@@ -39,4 +40,13 @@ app.get("/vars", (req : Request, res : Response) => get(req, res, Vars));
 app.post("/vars", (req : Request, res : Response) => post(req, res, Vars));
 app.get("/programs", (req : Request, res : Response) => get(req, res, Programs));
 
-app.listen(port, () => console.log(`app listening at http://localhost:${port}`))
+app.get("/checkProcess", (req :Request, res: Response) => {
+    ZoomCheck().then(result => res.send(result));
+});
+
+app.listen(port, () => console.log(`app listening at http://localhost:${port}`));
+
+setInterval(
+    () => ZoomCheck(),
+    15000
+)
