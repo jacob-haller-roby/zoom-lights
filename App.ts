@@ -5,6 +5,7 @@ import Active from "./websockets/Active";
 import Programs from "./websockets/Programs";
 
 import ProgramCollection from "./classes/ProgramCollection";
+import CachedChecker from "./statusChecks/CachedChecker";
 
 class App {
     Programs: ProgramCollection = new ProgramCollection();
@@ -14,12 +15,20 @@ class App {
             .then(programs => this.Programs.set(programs));
 
     };
+
+    Checkers: Array<CachedChecker> = [
+        new SlackCheck(),
+        new ZoomCheck()
+    ];
+
+    getData() : Array<Promise> {
+        return this.Checkers.map(checker => checker.get());
+    }
+
     pollAndUpdateLoop() : void {
         console.log("Polling...");
         setTimeout(
-            () => Promise.join(
-                SlackCheck(),
-                ZoomCheck(),
+            () => Promise.join(...this.getData(),
                 (isSlackAvailable, isInMeeting) => {
                     let programId: string;
 
