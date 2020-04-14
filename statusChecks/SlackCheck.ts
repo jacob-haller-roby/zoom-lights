@@ -6,7 +6,7 @@ import CachedChecker from "./CachedChecker";
 import * as moment from "moment";
 
 export default class SlackCheck extends CachedChecker {
-    pollingPeriod = moment.duration(1, "seconds");
+    pollingPeriod = moment.duration(10, "seconds");
 
     fetch() : Promise {
         return this.isUserAvailable(process.env.SLACK_USER_ID);
@@ -17,15 +17,15 @@ export default class SlackCheck extends CachedChecker {
             const req =https.request(this.getRequestOptions(userId), (res : IncomingMessage) => {
                 res.setEncoding('utf8');
                 res.on('data', (data) => {
-                    resolve(!JSON.parse(data).snooze_enabled);
+                    resolve(!JSON.parse(data).dnd_enabled);
                 });
             });
             req.end();
         })
             .tap((isAvailable : boolean) => {
                 let message = isAvailable ?
-                    "User is Available" :
-                    "User is Away";
+                    "User is Available on Slack" :
+                    "User is DnD on Slack";
                 console.log(new Date(), message);
             });
     };

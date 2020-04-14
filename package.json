@@ -6,9 +6,11 @@
   "dependencies": {
     "@types/node": "^13.11.1",
     "bluebird": "^3.7.2",
-    "ws": "^7.2.1",
     "moment": "^2.24.0",
-    "typescript": "^3.8.3"
+    "moment-timezone": "^0.5.28",
+    "request": "^2.88.2",
+    "typescript": "^3.8.3",
+    "ws": "^7.2.1"
   },
   "scripts": {
     "start": "ts-node App.ts"
