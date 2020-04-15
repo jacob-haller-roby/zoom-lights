@@ -1,5 +1,5 @@
-import * as WebSocket from 'ws';
-import * as Promise from 'bluebird';
+import WebSocket from 'ws';
+import Promise from 'bluebird';
 
 interface WebsocketRequest {
     postType?: string;
@@ -7,17 +7,17 @@ interface WebsocketRequest {
 
 abstract class WebsocketRequest {
 
-    private result: string;
+    private result: string | undefined;
 
     abstract getType: string;
-    protected abstract handleMessage(message: string | ArrayBuffer): string;
+    protected abstract handleMessage(message: string | ArrayBuffer): string | undefined;
     protected abstract resolveMessage(message?: string | ArrayBuffer): boolean;
     protected host: string = "192.168.0.87";
 
-    private ws: WebSocket;
+    private ws: WebSocket | undefined;
 
-    protected processMessage(message: any): object {
-        return message;
+    protected processMessage(message: any): Promise<any> {
+        return Promise.resolve(message);
     }
 
     protected getCheckWebSocket() : WebSocket {
@@ -29,7 +29,7 @@ abstract class WebsocketRequest {
         return this.ws;
     }
 
-    private getHandleMessage(resolve: (result: object) => void) {
+    private getHandleMessage(resolve: (result: Promise<string>) => void) {
         let that = this;
         return (message: string | ArrayBuffer) => {
             let result = that.handleMessage(message);
@@ -45,19 +45,20 @@ abstract class WebsocketRequest {
 
     protected handleError(error: string) {
         console.error("Error: " + error);
+        return error;
     }
 
-    public get() : Promise {
+    public get() : Promise<any> {
         if(this.result !== undefined) {
             return Promise.resolve(this.result);
         }
 
-        let frame = {};
+        let frame : { [x: string]: boolean } = {};
         frame[this.getType] = true;
         const ws = this.getCheckWebSocket();
         ws.on('open', () => ws.send(JSON.stringify(frame)));
 
-        return new Promise((resolve, reject) => {
+        return new Promise<string>((resolve, reject) => {
             setTimeout(() => reject("Operation Timed Out"), 5000);
             ws.on('message', this.getHandleMessage(resolve));
             ws.on('error', reject);
@@ -65,7 +66,7 @@ abstract class WebsocketRequest {
             .catch(this.handleError)
             .finally(() => ws.close());
     }
-    public post(postData: object | string) : Promise {
+    public post(postData: object | string) : Promise<string> {
 
         if (!this.postType) {
             return Promise.reject("Missing Post Type");
@@ -75,8 +76,7 @@ abstract class WebsocketRequest {
             return Promise.resolve(this.result);
         }
 
-        let frame = {};
-        frame[this.postType] = postData;
+        let frame : { [x: string]: boolean } = {};
         const ws = this.getCheckWebSocket();
         ws.on('open', () => ws.send(JSON.stringify(frame)));
         return this.get();

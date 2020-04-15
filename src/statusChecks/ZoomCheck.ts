@@ -1,12 +1,12 @@
-import * as Promise from "bluebird";
+import Promise from "bluebird";
 import CachedChecker from "./CachedChecker";
-import * as moment from "moment";
+import moment from "moment";
 
 export default class ZoomCheck extends CachedChecker {
     pollingPeriod = moment.duration(1, "seconds");
 
-    fetch() : Promise {
-        return new Promise((resolve, reject) => {
+    fetch() : Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
             require('child_process').exec(`tasklist`, (err: Error, stdout: string, stderr: string) => {
                 if (err) reject(err)
                 resolve(stdout.toLowerCase().indexOf("CptHost.exe".toLowerCase()) > -1)
@@ -16,7 +16,6 @@ export default class ZoomCheck extends CachedChecker {
                 let message = isRunning ?
                     "Currently in Zoom Meeting" :
                     "Not in Zoom Meeting";
-
                 console.log(new Date(), message);
             });
     };

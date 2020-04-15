@@ -1,4 +1,5 @@
 import WebsocketRequest from "./WebsocketRequest";
+import Promise from "bluebird";
 
 export default class Programs extends WebsocketRequest {
     private resultBuilder: string = "";
@@ -18,16 +19,16 @@ export default class Programs extends WebsocketRequest {
         return this.resultBuilder;
     }
 
-    protected processMessage(message: string): object {
+    protected processMessage(message: string): Promise<object> {
         let lines = message.split("\n");
         lines.pop();
-        return lines.map(line => {
+        return Promise.resolve(lines.map(line => {
             let splitLine = line.split("\t");
             return {
                 id: splitLine[0],
                 name: splitLine[1]
             }
-        });
+        }));
     }
 
 }

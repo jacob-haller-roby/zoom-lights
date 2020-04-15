@@ -1,4 +1,4 @@
-export default class Program {
+export default interface Program {
     id: string;
     name: string;
 }

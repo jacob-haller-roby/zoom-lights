@@ -1,23 +1,32 @@
-import * as Promise from "bluebird";
+import Promise from "bluebird";
 import * as https from "https";
 import {IncomingMessage} from "http";
 import * as queryString from "querystring";
 import CachedChecker from "./CachedChecker";
-import * as moment from "moment";
+import moment from "moment";
+import Environment from "../classes/Environment";
 
 export default class SlackCheck extends CachedChecker {
-    pollingPeriod = moment.duration(10, "seconds");
+    pollingPeriod = moment.duration(1, "minutes");
 
-    fetch() : Promise {
-        return this.isUserAvailable(process.env.SLACK_USER_ID);
+    fetch() : Promise<boolean> {
+        return this.isUserAvailable(Environment.vars().SLACK_USER_ID) as Promise<boolean>;
     };
 
     isUserAvailable(userId: string) : Promise<boolean> {
-        return new Promise((resolve, reject) => {
+        return new Promise<boolean>((resolve, reject) => {
             const req =https.request(this.getRequestOptions(userId), (res : IncomingMessage) => {
                 res.setEncoding('utf8');
-                res.on('data', (data) => {
-                    resolve(!JSON.parse(data).dnd_enabled);
+                res.on('data', (data: string) => {
+                    let jsonData : {
+                        next_dnd_start_ts: number,
+                        next_dnd_end_ts: number
+                    } = JSON.parse(data);
+                    let start : moment.Moment = moment(jsonData.next_dnd_start_ts * 1000);
+                    let end : moment.Moment = moment(jsonData.next_dnd_end_ts * 1000);
+                    let dndOn : boolean = start.isSameOrBefore(moment()) && end.isAfter(moment());
+
+                    resolve(!dndOn);
                 });
             });
             req.end();
@@ -41,7 +50,7 @@ export default class SlackCheck extends CachedChecker {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + process.env.SLACK_API_KEY
+                'Authorization': 'Bearer ' + Environment.vars().SLACK_API_KEY
             }
         };
     }

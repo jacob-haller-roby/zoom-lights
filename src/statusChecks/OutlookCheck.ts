@@ -1,36 +1,39 @@
-import * as Promise from "bluebird";
+import Promise from "bluebird";
 import CachedChecker from "./CachedChecker";
-import * as moment from "moment";
-import * as request from 'request';
+import moment from "moment";
+import request from 'request';
 import ScheduleItem from "../classes/ScheduleItem";
 import ScheduleItemCollection from "../classes/ScheduleItemCollection";
+import Environment from "../classes/Environment";
 
 export default class OutlookCheck extends CachedChecker {
-    pollingPeriod: moment.Duration = moment.duration(10, "minutes");
+    pollingPeriod: moment.Duration = moment.duration(30, "minutes");
     refreshToken: string;
     clientId: string;
     tenant: string;
+    email: string;
     constructor() {
         super();
-        this.clientId = process.env.OUTLOOK_CLIENT_ID;
-        this.refreshToken = process.env.OUTLOOK_REFRESH_TOKEN;
-        this.tenant = process.env.OUTLOOK_TENANT;
+        this.clientId = Environment.vars().OUTLOOK_CLIENT_ID;
+        this.refreshToken = Environment.vars().OUTLOOK_REFRESH_TOKEN;
+        this.tenant = Environment.vars().OUTLOOK_TENANT;
+        this.email = Environment.vars().OUTLOOK_EMAIL;
     }
 
-    fetch() : Promise {
+    fetch() : Promise<ScheduleItemCollection> {
         return this.fetchAccessToken()
             .then((accessToken: string) => this.fetchSchedule(accessToken))
             .tap(() => console.log(new Date(), "Outlook Calendar Updated"));
 
     };
 
-    fetchSchedule(accessToken: string) : Promise {
+    fetchSchedule(accessToken: string) : Promise<ScheduleItemCollection> {
         return new Promise((resolve, reject) => {
             request.post(
                 'https://graph.microsoft.com/v1.0/me/calendar/getSchedule',
                 {
                     json: {
-                        schedules: [process.env.EMAIL],
+                        schedules: [this.email],
                         startTime: {
                             dateTime: moment().startOf("day").toDate(),
                             timeZone: "Pacific Standard Time"
@@ -55,7 +58,7 @@ export default class OutlookCheck extends CachedChecker {
         })
     }
 
-    fetchAccessToken() : Promise {
+    fetchAccessToken() : Promise<string> {
         return new Promise((resolve, reject) => {
             request.post(
                 `https://login.microsoftonline.com/${this.tenant}/oauth2/v2.0/token`,
@@ -77,41 +80,4 @@ export default class OutlookCheck extends CachedChecker {
         })
 
     }
-
-    // fetchAccessToken() : Promise {
-    //     let that = this;
-    //     return new Promise((resolve, reject) => {
-    //         console.log('fetching access token...');
-    //         let options = {
-    //             host: "login.microsoftonline.com",
-    //             path: "/" + that.tenant + "/oauth2/v2.0/token",
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/x-www-form-urlencoded'
-    //             }
-    //         };
-    //         console.log(options);
-    //         const req = https.request(options, (res: IncomingMessage) => {
-    //             console.log('statusCode: ' + res.statusCode);
-    //             res.setEncoding('utf8');
-    //             if(res.statusCode != 200) {
-    //                 reject(res.statusMessage);
-    //             }
-    //             res.on('data', (data) => {
-    //                 console.log(data);
-    //                 resolve(!JSON.parse(data).access_token);
-    //             });
-    //         });
-    //
-    //         req.on('error', (error) => console.log(error));
-    //         let data = queryString.stringify({
-    //             client_id: that.clientId,
-    //             scope: "calendars.read",
-    //             grant_type: "refresh_token",
-    //             refresh_token: that.refreshToken
-    //         });
-    //         req.write(data);
-    //         req.end();
-    //     });
-    // }
 }

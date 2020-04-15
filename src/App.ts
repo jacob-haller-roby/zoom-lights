@@ -1,5 +1,4 @@
-import * as Promise from 'bluebird';
-import * as moment from 'moment';
+import Promise from 'bluebird';
 import ZoomCheck from "./statusChecks/ZoomCheck";
 import SlackCheck from "./statusChecks/SlackCheck";
 import Active from "./websockets/Active";
@@ -11,7 +10,7 @@ import OutlookCheck from "./statusChecks/OutlookCheck";
 import ScheduleItemCollection from "./classes/ScheduleItemCollection";
 
 class App {
-    activeProgramId: string;
+    activeProgramId: string = "";
 
     Programs: ProgramCollection = new ProgramCollection();
     getPrograms() : void {
@@ -27,20 +26,22 @@ class App {
         new OutlookCheck()
     ];
 
-    getData() : Array<Promise> {
+    getData() : Array<Promise<any>> {
         return this.Checkers.map(checker => checker.get());
     }
 
     pollAndUpdateLoop() : void {
         console.log("Polling...");
         setTimeout(
-            () => Promise.join(...this.getData(),
-                (isSlackAvailable: boolean, isInMeeting: boolean, meetings: ScheduleItemCollection) : string => {
+            () => Promise.all(this.getData())
+                .then(
+                ([isSlackAvailable, isInMeeting, meetings]) : string => {
                     if (!isSlackAvailable) {
                         //Outside office hours.  Happy light for free time
                         return "No More Work";
                     } else if (isInMeeting) {
-                        //In a meeting.  ACAB
+                        //In a meeting. ACAB
+                        meetings.clearCurrentMeetings();
                         return "ACAB";
                     } else if (meetings.hasMeeting()) {
                         //Should be in a meeting!! Hurry up!
@@ -48,17 +49,23 @@ class App {
                     } else if (meetings.meetingStartingSoon()) {
                         //Warning for upcoming meeting...
                         return "Get Ready";
+                    } else if (meetings.isBean30()) {
+                        //Bean 30!
+                        return "BEAN";
                     } else {
                         //Work hours, but no meetings!
                         return "Coding Time";
                     }
                 })
-                .then((programName: string) : Promise => {
-                    let programId: string = this.Programs.getProgramIdByName(programName);
+                .then((programName: string) : Promise<string> => {
+                    console.debug(programName)
+                    let programId: string | undefined = this.Programs.getProgramIdByName(programName);
 
-                    if (this.activeProgramId === programId) {
-                        return Promise.resolve();
+                    if (this.activeProgramId === programId || programId === undefined) {
+                        return Promise.resolve("No Change");
                     }
+
+                    console.log("Setting program to: " + programName);
 
                     return new Active().post(programId)
                         .tap(programId => console.log("Program successfully set to: " + this.Programs.getProgramNameById(programId)))
@@ -69,7 +76,7 @@ class App {
         );
     };
 
-    start() : Promise {
+    start() : Promise<void> {
         return Promise.resolve()
             .then(() => this.getPrograms())
             .then(() => this.pollAndUpdateLoop());
