@@ -13,10 +13,13 @@ export default class ZoomCheck extends CachedChecker {
             })
         })
             .tap((isRunning : boolean) => {
-                let message = isRunning ?
-                    "Currently in Zoom Meeting" :
-                    "Not in Zoom Meeting";
-                console.log(new Date(), message);
+
             });
     };
+
+    generateLogMessage(isRunning: boolean): string {
+        return isRunning ?
+            "Currently in Zoom Meeting" :
+            "Not in Zoom Meeting";
+    }
 }

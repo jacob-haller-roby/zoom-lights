@@ -22,8 +22,7 @@ export default class OutlookCheck extends CachedChecker {
 
     fetch() : Promise<ScheduleItemCollection> {
         return this.fetchAccessToken()
-            .then((accessToken: string) => this.fetchSchedule(accessToken))
-            .tap(() => console.log(new Date(), "Outlook Calendar Updated"));
+            .then((accessToken: string) => this.fetchSchedule(accessToken));
 
     };
 
@@ -79,5 +78,9 @@ export default class OutlookCheck extends CachedChecker {
             );
         })
 
+    }
+
+    generateLogMessage(newData: object): string {
+        return "Outlook Calendar Updated";
     }
 }

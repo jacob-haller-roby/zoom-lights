@@ -31,12 +31,6 @@ export default class SlackCheck extends CachedChecker {
             });
             req.end();
         })
-            .tap((isAvailable : boolean) => {
-                let message = isAvailable ?
-                    "User is Available on Slack" :
-                    "User is DnD on Slack";
-                console.log(new Date(), message);
-            });
     };
 
     getRequestOptions(userId: string) : object {
@@ -53,5 +47,11 @@ export default class SlackCheck extends CachedChecker {
                 'Authorization': 'Bearer ' + Environment.vars().SLACK_API_KEY
             }
         };
+    }
+
+    generateLogMessage(isAvailable: boolean): string {
+        return isAvailable ?
+            "User is Available on Slack" :
+            "User is DnD on Slack";
     }
 }
