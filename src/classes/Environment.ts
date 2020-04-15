@@ -1,5 +1,3 @@
-import * as ts from 'typescript';
-
 enum EnvironmentVariables {
     OUTLOOK_CLIENT_ID,
     OUTLOOK_EMAIL,
