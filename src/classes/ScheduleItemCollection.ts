@@ -10,7 +10,7 @@ export default class ScheduleItemCollection  {
 
     isBean30(time: moment.Moment = moment()) : boolean {
         return this.scheduleItems.some((scheduleItem : ScheduleItem) => {
-            return scheduleItem.subject === "It's Bean 30!";
+            return scheduleItem.subject === "It's Bean 30!" &&
                 (<moment.Moment>scheduleItem.start).isSameOrBefore(time) &&
                 (<moment.Moment>scheduleItem.end).isAfter(time);
         });
