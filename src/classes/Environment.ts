@@ -1,22 +1,18 @@
-enum EnvironmentVariables {
-    OUTLOOK_CLIENT_ID,
-    OUTLOOK_EMAIL,
-    OUTLOOK_REFRESH_TOKEN,
-    OUTLOOK_TENANT,
-    SLACK_API_KEY,
-    SLACK_USER_ID
-}
-
 interface Variables {
     [x: string] : string;
 }
 
-
 class Variables {
 
+    OUTLOOK_CLIENT_ID: string = "";
+    OUTLOOK_EMAIL: string = "";
+    OUTLOOK_REFRESH_TOKEN: string = "";
+    OUTLOOK_TENANT: string = "";
+    SLACK_API_KEY: string = "";
+    SLACK_USER_ID: string = "";
+
     constructor() {
-        Object.values(EnvironmentVariables)
-            .filter (<(variable: string | number) => variable is string>(variable => typeof variable === "string"))
+        Object.keys(this)
             .map((key: string ): void => {
             let value = process.env[key];
             if(value === undefined) {
@@ -25,8 +21,6 @@ class Variables {
             this[key] = value;
         });
     }
-
-
 }
 
 export default class Environment {
@@ -39,6 +33,4 @@ export default class Environment {
         }
         return this.variables;
     }
-
-
 }
