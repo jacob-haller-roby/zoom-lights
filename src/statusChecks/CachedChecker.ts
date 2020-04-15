@@ -1,5 +1,6 @@
 import Promise from 'bluebird';
 import moment from 'moment';
+import Logger from '../classes/Logger';
 
 export default abstract class CachedChecker {
     data: boolean | object | void | undefined;
@@ -11,13 +12,13 @@ export default abstract class CachedChecker {
             this.refetchTime = moment().add(this.pollingPeriod);
             return this.fetch()
                 .catch((error: any) => {
-                    console.error("Error: " + error);
-                    console.log("retrying fetch");
+                    Logger.log("Error: " + error);
+                    Logger.log("retrying fetch");
                     this.refetchTime = moment().subtract(this.pollingPeriod)
                 })
                 .tap((data: boolean | object | void) => {
                     if (JSON.stringify(data) !== JSON.stringify(this.data)) {
-                        console.log(new Date(), this.generateLogMessage(data));
+                        Logger.log(new Date(), this.generateLogMessage(data));
                     }
                 })
                 .then((data: boolean | object | void) => {

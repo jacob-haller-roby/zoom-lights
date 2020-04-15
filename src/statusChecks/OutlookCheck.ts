@@ -2,7 +2,6 @@ import Promise from "bluebird";
 import CachedChecker from "./CachedChecker";
 import moment from "moment";
 import request from 'request';
-import ScheduleItem from "../classes/ScheduleItem";
 import ScheduleItemCollection from "../classes/ScheduleItemCollection";
 import Environment from "../classes/Environment";
 

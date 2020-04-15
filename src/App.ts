@@ -1,5 +1,8 @@
 import dotenv from 'dotenv';
 import Promise from 'bluebird';
+
+import Logger from './classes/Logger';
+
 import ZoomCheck from "./statusChecks/ZoomCheck";
 import SlackCheck from "./statusChecks/SlackCheck";
 import Active from "./websockets/Active";
@@ -17,7 +20,7 @@ class App {
 
     Programs: ProgramCollection = new ProgramCollection();
     getPrograms() : void {
-        console.log("Getting Programs...");
+        Logger.log("Getting Programs...");
         new Programs().get()
             .then(programs => this.Programs.set(programs));
 
@@ -36,7 +39,8 @@ class App {
     pollAndUpdateLoop() : void {
         setTimeout(
             () => Promise.resolve()
-                .then(() => console.log("Polling..."))
+
+                .then(() => Logger.status("Polling..."))
                 .then(() => Promise.all(this.getData()))
                 .then(
                 ([isSlackAvailable, isInMeeting, meetings]) :  typeof Program.Options[keyof typeof Program.Options] => {
@@ -69,21 +73,21 @@ class App {
                 .then((programName: typeof Program.Options[keyof typeof Program.Options]) : Promise<string> => {
 
                     if (this.activeProgramName === programName) {
-                        return Promise.resolve("No Change, keeping: " + programName);
+                        return Promise.reject("No Change, keeping: " + programName);
                     }
                     if (!this.Programs.hasProgram(programName)) {
                         return Promise.reject("Program Not Found: " + programName);
                     }
                     let programId: string = this.Programs.getProgramIdByName(programName);
 
-                    console.log("Setting program to: " + programName);
+                    Logger.log("Setting program to: " + programName);
 
                     return new Active().post(programId)
                         .then(() => this.activeProgramName = programName)
                         .then(programName => "Successfully changed program to: " + programName);
                 })
-                .tap(console.debug)
-                .catch(console.error)
+                .tap(Logger.log)
+                .catch(Logger.status)
                 .finally(() => this.pollAndUpdateLoop()),
             1000
         );

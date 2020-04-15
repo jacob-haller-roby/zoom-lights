@@ -1,6 +1,8 @@
 import WebSocket from 'ws';
 import Promise from 'bluebird';
 
+import Logger from '../classes/Logger';
+
 interface WebsocketRequest {
     postType?: string;
 }
@@ -40,11 +42,11 @@ abstract class WebsocketRequest {
         }
     }
     private handleClose(): void {
-        console.log("Closing Websocket Connection");
+        Logger.status("Closing Websocket Connection");
     }
 
     protected handleError(error: string) {
-        console.error("Error: " + error);
+        Logger.log("Error: " + error);
         return error;
     }
 
@@ -72,7 +74,7 @@ abstract class WebsocketRequest {
             return Promise.reject("Missing Post Type");
         }
         if(this.result !== undefined) {
-            console.log("returning cached result")
+            Logger.status("returning cached result")
             return Promise.resolve(this.result);
         }
 
