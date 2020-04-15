@@ -7,7 +7,7 @@ import ScheduleItemCollection from "../classes/ScheduleItemCollection";
 import Environment from "../classes/Environment";
 
 export default class OutlookCheck extends CachedChecker {
-    pollingPeriod: moment.Duration = moment.duration(30, "minutes");
+    pollingPeriod: moment.Duration = moment.duration(12, "hours");
     refreshToken: string;
     clientId: string;
     tenant: string;
