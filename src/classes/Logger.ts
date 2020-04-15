@@ -2,7 +2,7 @@ export default class Logger {
     static log(...messages: any[]) {
         process.stdout.clearLine(0);
         process.stdout.cursorTo(0);
-        process.stdout.write(Logger.format(...messages) + "\n");
+        process.stdout.write(Logger.format(new Date(), ...messages) + "\n");
     }
 
     static status(...messages: any[]) {

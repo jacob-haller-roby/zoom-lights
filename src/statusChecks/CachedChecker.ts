@@ -18,7 +18,7 @@ export default abstract class CachedChecker {
                 })
                 .tap((data: boolean | object | void) => {
                     if (JSON.stringify(data) !== JSON.stringify(this.data)) {
-                        Logger.log(new Date(), this.generateLogMessage(data));
+                        Logger.log(this.generateLogMessage(data));
                     }
                 })
                 .then((data: boolean | object | void) => {
