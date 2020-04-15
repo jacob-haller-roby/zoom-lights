@@ -19,7 +19,7 @@ export default class ZoomCheck extends CachedChecker {
 
     generateLogMessage(isRunning: boolean): string {
         return isRunning ?
-            "Currently in Zoom Meeting" :
-            "Not in Zoom Meeting";
+            "Joined Zoom Meeting" :
+            "Exited Zoom Meeting";
     }
 }

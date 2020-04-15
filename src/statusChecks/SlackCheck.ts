@@ -51,7 +51,7 @@ export default class SlackCheck extends CachedChecker {
 
     generateLogMessage(isAvailable: boolean): string {
         return isAvailable ?
-            "User is Available on Slack" :
-            "User is DnD on Slack";
+            "User became available on Slack" :
+            "User set to DnD on Slack";
     }
 }
