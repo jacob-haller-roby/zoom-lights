@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import Promise from 'bluebird';
 import ZoomCheck from "./statusChecks/ZoomCheck";
 import SlackCheck from "./statusChecks/SlackCheck";
@@ -7,7 +8,8 @@ import Programs from "./websockets/Programs";
 import ProgramCollection from "./classes/ProgramCollection";
 import CachedChecker from "./statusChecks/CachedChecker";
 import OutlookCheck from "./statusChecks/OutlookCheck";
-import ScheduleItemCollection from "./classes/ScheduleItemCollection";
+
+dotenv.config();
 
 class App {
     activeProgramId: string = "";

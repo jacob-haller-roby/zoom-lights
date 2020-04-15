@@ -2,3 +2,4 @@
 node_modules
 lights.iml
 dist
+.env
