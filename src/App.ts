@@ -45,17 +45,16 @@ class App {
                 .then(
                 ([isSlackAvailable, isInMeeting, meetings]) :  typeof Program.Options[keyof typeof Program.Options] => {
 
-
-                    if (!isSlackAvailable) {
-                        //Outside office hours.  Happy light for free time
-                        return Program.Options.NO_MORE_WORK;
-                    } else if (isInMeeting) {
+                    if (isInMeeting) {
                         //In a meeting. ACAB
                         if(this.activeProgramName !== Program.Options.ACAB){
                             //remove current meetings only when first joining
                             meetings.clearCurrentMeetings();
                         }
                         return Program.Options.ACAB;
+                    } else if (!isSlackAvailable) {
+                        //Outside office hours.  Happy light for free time
+                        return Program.Options.NO_MORE_WORK;
                     } else if (meetings.hasMeeting()) {
                         //Should be in a meeting!! Hurry up!
                         return Program.Options.LATE;
