@@ -33,8 +33,7 @@ export default class ScheduleItemCollection  {
     getNextMeeting(time: moment.Moment = moment()) : ScheduleItem {
         let eod = time.clone().endOf('day');
         return this.scheduleItems.reduce((acc: ScheduleItem, cur: ScheduleItem) : ScheduleItem => {
-            let isNextEvent = (<moment.Moment>cur.start).isBetween(time, <moment.Moment>acc.start);
-            if(isNextEvent){
+            if((<moment.Moment>cur.start).isBetween(time, <moment.Moment>acc.start)){
                 return cur;
             }
             return acc;
