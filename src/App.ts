@@ -15,18 +15,16 @@ import OutlookCheck from "./statusChecks/OutlookCheck";
 import Program from "./classes/Program";
 import VarsWebsocket from "./websockets/VarsWebsocket";
 import ScheduleItemCollection from "./classes/ScheduleItemCollection";
-import SlackApi from "./api/SlackApi";
 
 dotenv.config();
 
-const noop = () => {};
 
 class App {
     activeProgramName: string = "";
 
     Programs: ProgramCollection = new ProgramCollection();
     getPrograms() : void {
-        Logger.log("Getting ProgramsWebsocket...");
+        Logger.log("Getting Programs...");
         new ProgramsWebsocket().get()
             .then(programs => this.Programs.set(programs))
             .catch(() => {
