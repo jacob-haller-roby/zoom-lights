@@ -15,6 +15,7 @@ import OutlookCheck from "./statusChecks/OutlookCheck";
 import Program from "./classes/Program";
 import Vars from "./websockets/Vars";
 import ScheduleItemCollection from "./classes/ScheduleItemCollection";
+import Slack from "./api/Slack";
 
 dotenv.config();
 
@@ -49,6 +50,7 @@ class App {
         setTimeout(
             () => Promise.resolve()
                 .then(() => Logger.status("Polling..."))
+                .then(this.setAwayOnWeekends)
                 .then(() => Promise.all(this.getData()))
                 .then(([isSlackAvailable, isInMeeting, meetings]) :  Promise<[typeof Program.validName, ScheduleItemCollection]> => {
                     let programNamePromise = this.getNextProgramName(isSlackAvailable, isInMeeting, meetings);
@@ -69,6 +71,15 @@ class App {
             1000
         );
     };
+
+    setAwayOnWeekends() {
+        let weekday = moment().isoWeekday();
+        // if(weekday > 5) {
+            let until: moment.Moment = moment().isoWeekday(8).hour(7).minute(30);
+            Slack.setDndStatus(until)
+                .then(() => Logger.log("Slack set to away until:", until.toString()));
+        // }
+    }
 
     getNextProgramName(isSlackAvailable: boolean, isInMeeting: boolean, meetings: ScheduleItemCollection): typeof Program.validName {
         if (isInMeeting) {

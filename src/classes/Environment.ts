@@ -9,7 +9,6 @@ class Variables {
     OUTLOOK_REFRESH_TOKEN: string = "";
     OUTLOOK_TENANT: string = "";
     SLACK_API_KEY: string = "";
-    SLACK_USER_ID: string = "";
 
     constructor() {
         Object.keys(this)
