@@ -28,12 +28,23 @@ export default class Logger {
 
     private static format(...messages: any[]){
         return messages.reduce((acc, cur) => {
-            if(cur instanceof Date) {
+            if (cur instanceof Date) {
                 cur = "\x1b[35m" + cur.toLocaleDateString() + " " + cur.toLocaleTimeString() + "\x1b[0m"
             }
 
-            if(acc.length !== 0 && acc.charAt(acc.length - 1) !== " " && cur.charCodeAt(0) !== 27) {
-                acc += " ";
+            if (cur instanceof Error) {
+                cur = cur.message;
+            }
+
+            try {
+                if(acc.length !== 0 &&
+                    acc.charAt(acc.length - 1) !== " " &&
+                    !(typeof cur['charCodeAt'] === 'function' && cur.charCodeAt(0) === 27)
+                ) {
+                    acc += " ";
+                }
+            } catch {
+                console.log(cur);
             }
 
             return acc + cur;

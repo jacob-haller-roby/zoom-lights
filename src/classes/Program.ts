@@ -1,9 +1,9 @@
 enum ProgramOptions {
     ACAB = "ACAB",
     LATE = "Late",
-    NO_MORE_WORK = "No more work",
+    NO_MORE_WORK = "fast pulse",
     GET_READY = "get ready",
-    BEAN = "bean",
+    BEAN = "fast pulse",
     CODING_TIME = "coding time"
 }
 

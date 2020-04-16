@@ -28,6 +28,24 @@ export default class ScheduleItemCollection  {
         return this.hasMeeting(moment().add(duration)) || this.hasMeeting(moment().add(moment.duration(1, "minutes")));
     }
 
+    getNextMeeting(time: moment.Moment = moment()) : ScheduleItem {
+        let eod = time.clone().endOf('day');
+        return this.scheduleItems.reduce((acc: ScheduleItem, cur: ScheduleItem) : ScheduleItem => {
+            let isNextEvent = (<moment.Moment>cur.start).isBetween(time, <moment.Moment>acc.start);
+            if(isNextEvent){
+                return cur;
+            }
+            return acc;
+        }, new ScheduleItem({
+            start: eod,
+            end: eod,
+            isPrivate: true,
+            location: "",
+            status: "",
+            subject: ""
+        }))
+    }
+
     clearCurrentMeetings() : void {
         this.scheduleItems = this.scheduleItems.filter(scheduleItem => {
             return !(

@@ -4,6 +4,7 @@ import Promise from "bluebird";
 export default class Programs extends WebsocketRequest {
     private resultBuilder: string = "";
     getType: string = "listPrograms";
+    responseFromPost: boolean = false;
 
     protected resolveMessage(message: ArrayBuffer) {
         const view = new Uint8Array(message);
