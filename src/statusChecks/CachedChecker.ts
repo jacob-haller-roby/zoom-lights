@@ -12,8 +12,8 @@ export default abstract class CachedChecker {
             this.refetchTime = moment().add(this.pollingPeriod);
             return this.fetch()
                 .catch((error: any) => {
-                    Logger.log("Error: " + error);
-                    Logger.log("retrying fetch");
+                    Logger.error("Error: " + error);
+                    Logger.error("retrying fetch");
                     this.refetchTime = moment().subtract(this.pollingPeriod)
                 })
                 .tap((data: boolean | object | void) => {

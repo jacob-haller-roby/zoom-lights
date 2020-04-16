@@ -46,7 +46,7 @@ abstract class WebsocketRequest {
     }
 
     protected handleError(error: string) {
-        Logger.log("Error: " + error);
+        Logger.error("Error: " + error);
         return error;
     }
 

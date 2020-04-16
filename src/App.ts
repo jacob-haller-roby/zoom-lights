@@ -72,7 +72,8 @@ class App {
                 .then((programName: typeof Program.Options[keyof typeof Program.Options]) : Promise<string> => {
 
                     if (this.activeProgramName === programName) {
-                        return Promise.reject("No Change, keeping: " + programName);
+                        return Promise.resolve("No Change, keeping: " + programName)
+                            .tap(Logger.status);
                     }
                     if (!this.Programs.hasProgram(programName)) {
                         return Promise.reject("Program Not Found: " + programName);
@@ -83,10 +84,10 @@ class App {
 
                     return new Active().post(programId)
                         .then(() => this.activeProgramName = programName)
-                        .then(programName => "Successfully changed program to: " + programName);
+                        .then(programName => "Successfully changed program to: " + programName)
+                        .tap(Logger.success);
                 })
-                .tap(Logger.log)
-                .catch(Logger.status)
+                .catch(Logger.errorStatus)
                 .finally(() => this.pollAndUpdateLoop()),
             1000
         );
