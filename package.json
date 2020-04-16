@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.7.2",
+    "cross-env": "^7.0.2",
     "dotenv": "^8.2.0",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.28",
@@ -16,10 +17,11 @@
     "start": "node dist/App.min.js",
     "compile": "tsc --declaration && npm run minify",
     "minify": "uglifyjs --compress --mangle --output dist/App.min.js -- dist/App.js",
-    "package": "pkg ./dist/App.min.js -t node13-win-x64 -o \"Work Light Indicator\"",
+    "package": "node package.js",
     "build": "npm run compile && npm run package"
   },
   "devDependencies": {
+    "node-resourcehacker": "^1.2.1",
     "@types/bluebird": "^3.5.30",
     "@types/node": "^13.11.1",
     "@types/request": "^2.48.4",

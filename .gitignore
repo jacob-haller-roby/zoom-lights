@@ -4,3 +4,6 @@ lights.iml
 dist
 .env
 *.exe
+*.zip
+pkg-cache
+*.ini
