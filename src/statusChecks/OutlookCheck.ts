@@ -79,7 +79,7 @@ export default class OutlookCheck extends CachedChecker {
 
     }
 
-    generateLogMessage(newData: object): string {
+    generateLogMessage(newData: ScheduleItemCollection): string {
         return "Outlook Calendar Updated";
     }
 }

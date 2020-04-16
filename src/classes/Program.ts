@@ -6,7 +6,6 @@ enum ProgramOptions {
     BEAN = "fast pulse",
     CODING_TIME = "coding time"
 }
-type optionType  = typeof Program.Options[keyof typeof Program.Options];
 
 interface Program {
     id: string;
@@ -14,7 +13,7 @@ interface Program {
 }
 class Program {
     static readonly Options = ProgramOptions;
-    static readonly validName: optionType;
+    static readonly validName: typeof Program.Options[keyof typeof Program.Options];
 }
 
 export default Program;

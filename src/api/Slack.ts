@@ -21,7 +21,7 @@ export default class Slack {
         };
     }
 
-    static getDndStatus(userId: string) : Promise<boolean> {
+    static getDndStatus() : Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
             const req =https.request(this.getRequestOptions('/api/dnd.info'),
             (res : IncomingMessage) => {

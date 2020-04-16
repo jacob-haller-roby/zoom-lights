@@ -36,23 +36,28 @@ class App {
 
     };
 
+    slackCheck: SlackCheck = new SlackCheck();
+    zoomCheck: ZoomCheck = new ZoomCheck();
+    outlookCheck: OutlookCheck = new OutlookCheck();
+
     Checkers: Array<CachedChecker> = [
-        new SlackCheck(),
-        new ZoomCheck(),
-        new OutlookCheck()
+        this.slackCheck,
+        this.zoomCheck,
+        this.outlookCheck
     ];
 
-    getData() : Array<Promise<any>> {
-        return this.Checkers.map(checker => checker.get());
+    static readonly CheckersReturnTypes: [boolean, boolean, ScheduleItemCollection];
+
+    getData() : Promise<typeof App.CheckersReturnTypes> {
+        return <Promise<typeof App.CheckersReturnTypes>> Promise.all(this.Checkers.map(checker => checker.get()));
     }
 
     pollAndUpdateLoop() : void {
         setTimeout(
             () => Promise.resolve()
                 .then(() => Logger.status("Polling..."))
-                .then(this.setAwayOnWeekends)
-                .then(() => Promise.all(this.getData()))
-                .then(([isSlackAvailable, isInMeeting, meetings]) :  Promise<[typeof Program.validName, ScheduleItemCollection]> => {
+                .then((): Promise<typeof App.CheckersReturnTypes> => this.getData())
+                .then(([isSlackAvailable, isInMeeting, meetings]: typeof App.CheckersReturnTypes) :  Promise<[typeof Program.validName, ScheduleItemCollection]> => {
                     let programNamePromise = this.getNextProgramName(isSlackAvailable, isInMeeting, meetings);
                     return Promise.all([programNamePromise, meetings]);
                 })
@@ -71,15 +76,6 @@ class App {
             1000
         );
     };
-
-    setAwayOnWeekends() {
-        let weekday = moment().isoWeekday();
-        // if(weekday > 5) {
-            let until: moment.Moment = moment().isoWeekday(8).hour(7).minute(30);
-            Slack.setDndStatus(until)
-                .then(() => Logger.log("Slack set to away until:", until.toString()));
-        // }
-    }
 
     getNextProgramName(isSlackAvailable: boolean, isInMeeting: boolean, meetings: ScheduleItemCollection): typeof Program.validName {
         if (isInMeeting) {

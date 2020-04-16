@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export default class Logger {
 
     static error(...messages: any[]) {
@@ -28,6 +30,11 @@ export default class Logger {
 
     private static format(...messages: any[]){
         return messages.reduce((acc, cur) => {
+
+            if ('toDate' in cur) {
+                cur = cur.toDate();
+            }
+
             if (cur instanceof Date) {
                 cur = "\x1b[35m" + cur.toLocaleDateString() + " " + cur.toLocaleTimeString() + "\x1b[0m"
             }
