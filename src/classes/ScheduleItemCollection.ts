@@ -25,7 +25,9 @@ export default class ScheduleItemCollection  {
     }
 
     meetingStartingSoon(duration: moment.Duration = moment.duration(15, "minutes")) : boolean {
-        return this.hasMeeting(moment().add(duration)) || this.hasMeeting(moment().add(moment.duration(1, "minutes")));
+        let start = moment();
+        let end = moment().add(duration);
+        return this.scheduleItems.some(scheduleItem => (<moment.Moment>scheduleItem.start).isBetween(start, end));
     }
 
     getNextMeeting(time: moment.Moment = moment()) : ScheduleItem {
