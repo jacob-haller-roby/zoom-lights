@@ -31,7 +31,7 @@ export default class Logger {
     private static format(...messages: any[]){
         return messages.reduce((acc, cur) => {
 
-            if ('toDate' in cur) {
+            if (typeof cur === 'object' && 'toDate' in cur) {
                 cur = cur.toDate();
             }
 
