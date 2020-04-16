@@ -6,7 +6,7 @@ import queryString from "querystring";
 import Environment from "../classes/Environment";
 
 
-export default class Slack {
+export default class SlackApi {
 
     private static getRequestOptions(path: string) : object {
         return {

@@ -1,6 +1,6 @@
 import WebsocketRequest from "./WebsocketRequest";
 
-export default class Active extends WebsocketRequest {
+export default class ActiveProgramWebsocket extends WebsocketRequest {
     getType: string = "getConfig";
     postType: string = "activeProgramId";
     responseFromPost: boolean = true;

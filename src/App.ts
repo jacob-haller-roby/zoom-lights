@@ -6,16 +6,16 @@ import Logger from './classes/Logger';
 
 import ZoomCheck from "./statusChecks/ZoomCheck";
 import SlackCheck from "./statusChecks/SlackCheck";
-import Active from "./websockets/Active";
-import Programs from "./websockets/Programs";
+import ActiveProgramWebsocket from "./websockets/ActiveProgramWebsocket";
+import ProgramsWebsocket from "./websockets/ProgramsWebsocket";
 
 import ProgramCollection from "./classes/ProgramCollection";
 import CachedChecker from "./statusChecks/CachedChecker";
 import OutlookCheck from "./statusChecks/OutlookCheck";
 import Program from "./classes/Program";
-import Vars from "./websockets/Vars";
+import VarsWebsocket from "./websockets/VarsWebsocket";
 import ScheduleItemCollection from "./classes/ScheduleItemCollection";
-import Slack from "./api/Slack";
+import SlackApi from "./api/SlackApi";
 
 dotenv.config();
 
@@ -26,8 +26,8 @@ class App {
 
     Programs: ProgramCollection = new ProgramCollection();
     getPrograms() : void {
-        Logger.log("Getting Programs...");
-        new Programs().get()
+        Logger.log("Getting ProgramsWebsocket...");
+        new ProgramsWebsocket().get()
             .then(programs => this.Programs.set(programs))
             .catch(() => {
                 Logger.log("Retrying programs fetch...");
@@ -120,7 +120,7 @@ class App {
     }
 
     setActiveProgram(programName: string, meetings: ScheduleItemCollection) : Promise<boolean> {
-        return new Active().post(this.Programs.getProgramIdByName(programName))
+        return new ActiveProgramWebsocket().post(this.Programs.getProgramIdByName(programName))
             .then(() => this.activeProgramName = programName)
             .then(() => Logger.success("Successfully changed program to:", programName))
             .then(() : Promise<boolean> => {
@@ -139,7 +139,7 @@ class App {
         let duration : moment.Duration = moment.duration((<moment.Moment>meetings.getNextMeeting().start).diff(moment()));
         let postData = {startTime: duration.as('seconds')};
         Logger.log("Attempting to set start time to:", postData.startTime);
-        return new Vars().post(postData)
+        return new VarsWebsocket().post(postData)
             .then((vars: { startTime: unknown }) => {
                 Logger.success("Successfully set start time to:", vars.startTime);
                 return true;

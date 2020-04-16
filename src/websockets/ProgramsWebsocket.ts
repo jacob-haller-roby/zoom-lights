@@ -1,7 +1,7 @@
 import WebsocketRequest from "./WebsocketRequest";
 import Promise from "bluebird";
 
-export default class Programs extends WebsocketRequest {
+export default class ProgramsWebsocket extends WebsocketRequest {
     private resultBuilder: string = "";
     getType: string = "listPrograms";
     responseFromPost: boolean = false;

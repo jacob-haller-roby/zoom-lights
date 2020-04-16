@@ -1,6 +1,6 @@
 import WebsocketRequest from "./WebsocketRequest";
 
-export default class Vars extends WebsocketRequest {
+export default class VarsWebsocket extends WebsocketRequest {
     getType: string = "getVars";
     postType: string = "setVars";
     responseFromPost: boolean = false;
