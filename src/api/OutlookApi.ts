@@ -60,7 +60,9 @@ export default class OutlookApi {
             });
     }
 
-    static getScheduleItems() : Promise<ScheduleItemCollection> {
+    static getScheduleItems(duration: moment.Duration) : Promise<ScheduleItemCollection> {
+        let start = moment();
+        let end = moment().add(duration);
         return OutlookApi.fetchAccessToken()
             .then((accessToken: string) => {
                 return new Promise((resolve, reject) => {
@@ -70,11 +72,11 @@ export default class OutlookApi {
                             json: {
                                 schedules: [OutlookApi.outlookApiAuth.email],
                                 startTime: {
-                                    dateTime: moment().startOf("day").toDate(),
+                                    dateTime: start.toDate(),
                                     timeZone: "Pacific Standard Time"
                                 },
                                 endTime: {
-                                    dateTime: moment().endOf("day").toDate(),
+                                    dateTime: end.toDate(),
                                     timeZone: "Pacific Standard Time"
                                 },
                                 availabilityViewInterval: 15

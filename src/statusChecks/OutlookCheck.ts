@@ -8,7 +8,8 @@ export default class OutlookCheck extends CachedChecker {
     pollingPeriod: moment.Duration = moment.duration(12, "hours");
 
     fetch() : Promise<ScheduleItemCollection> {
-        return OutlookApi.getScheduleItems();
+        let until: moment.Duration = this.pollingPeriod.clone().add(2, "hours");
+        return OutlookApi.getScheduleItems(until);
     };
 
     generateLogMessage(newData: ScheduleItemCollection): string {
