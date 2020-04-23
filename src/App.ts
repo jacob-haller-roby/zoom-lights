@@ -50,7 +50,7 @@ class App {
         return <Promise<typeof App.CheckersReturnTypes>> Promise.all(this.Checkers.map(checker => checker.get()));
     }
 
-    pollAndUpdateLoop() : void {
+    pollAndUpdateLoop(timeout: number = 1000) : void {
         setTimeout(
             () => Promise.resolve()
                 .then(() => Logger.status("Polling..."))
@@ -69,9 +69,12 @@ class App {
                     }
                     return Promise.resolve(false);
                 })
-                .catch((error) => Logger.error(error))
-                .finally(() => this.pollAndUpdateLoop()),
-            1000
+                .then(() => this.pollAndUpdateLoop())
+                .catch((error) => {
+                    Logger.error(error);
+                    this.pollAndUpdateLoop(10000);
+                }),
+            timeout
         );
     };
 
