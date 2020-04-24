@@ -1,10 +1,10 @@
 enum ProgramOptions {
     ACAB = "ACAB",
-    LATE = "Late",
     NO_MORE_WORK = "fast pulse",
     GET_READY = "get ready",
     BEAN = "fast pulse",
-    CODING_TIME = "coding time"
+    CODING_TIME = "coding time",
+    DO_NOT_DISTURB = "Do Not Disturb"
 }
 
 interface Program {

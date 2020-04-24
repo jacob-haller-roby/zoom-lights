@@ -63,11 +63,11 @@ class App {
                     let shouldSetProgramPromise = this.checkShouldSetProgram(programName);
                     return Promise.all([shouldSetProgramPromise, programName, meetings]);
                 })
-                .then(([shouldSetProgramPromise, programName, meetings]): Promise<boolean> => {
+                .then(([shouldSetProgramPromise, programName, meetings]): Promise<void> => {
                     if(shouldSetProgramPromise) {
                         return this.setActiveProgram(programName, meetings);
                     }
-                    return Promise.resolve(false);
+                    return Promise.resolve();
                 })
                 .then(() => this.pollAndUpdateLoop())
                 .catch((error) => {
@@ -81,17 +81,17 @@ class App {
     getNextProgramName(isSlackAvailable: boolean, isInMeeting: boolean, meetings: ScheduleItemCollection): typeof Program.validName {
         if (isInMeeting) {
             //In a meeting. ACAB
-            if(this.activeProgramName !== Program.Options.ACAB){
+            if(this.activeProgramName !== Program.Options.DO_NOT_DISTURB){
                 //remove current meetings only when first joining
                 meetings.clearCurrentMeetings();
             }
-            return Program.Options.ACAB;
+            return Program.Options.DO_NOT_DISTURB;
         } else if (!isSlackAvailable) {
             //Outside office hours.  Happy light for free time
             return Program.Options.NO_MORE_WORK;
         } else if (meetings.hasMeeting()) {
             //Should be in a meeting!! Hurry up!
-            return Program.Options.LATE;
+            return Program.Options.ACAB;
         } else if (meetings.meetingStartingSoon()) {
             //Warning for upcoming meeting...
             return Program.Options.GET_READY;
@@ -120,34 +120,25 @@ class App {
         return Promise.resolve(true);
     }
 
-    setActiveProgram(programName: string, meetings: ScheduleItemCollection) : Promise<boolean> {
+    setActiveProgram(programName: string, meetings: ScheduleItemCollection) : Promise<void> {
         return new ActiveProgramWebsocket().post(this.Programs.getProgramIdByName(programName))
             .then(() => this.activeProgramName = programName)
             .then(() => Logger.success("Successfully changed program to:", programName))
-            .then(() : Promise<boolean> => {
+            .then(() : Promise<void> => {
                 if (programName === Program.Options.GET_READY) {
                     return this.setGetReadyStartTime(meetings);
                 }
-                return Promise.resolve(true);
+                return Promise.resolve();
             })
-            .catch((error) => {
-                Logger.error(error);
-                return false;
-            });
     }
 
-    setGetReadyStartTime(meetings: ScheduleItemCollection) : Promise<boolean> {
+    setGetReadyStartTime(meetings: ScheduleItemCollection) : Promise<void> {
         let duration : moment.Duration = moment.duration((<moment.Moment>meetings.getNextMeeting().start).diff(moment()));
         let postData = {startTime: duration.as('seconds')};
         Logger.log("Attempting to set start time to:", postData.startTime);
         return new VarsWebsocket().post(postData)
             .then((vars: { startTime: unknown }) => {
                 Logger.success("Successfully set start time to:", vars.startTime);
-                return true;
-            })
-            .catch((error) => {
-                Logger.error(error);
-                return false;
             });
     }
 
