@@ -5,7 +5,8 @@ export default class ScheduleItemCollection  {
     scheduleItems: Array<ScheduleItem>;
 
     constructor(scheduleItems: Array<ScheduleItem>) {
-        this.scheduleItems = scheduleItems.map(scheduleItem => new ScheduleItem(scheduleItem));
+        this.scheduleItems = scheduleItems.map(scheduleItem => new ScheduleItem(scheduleItem))
+            .filter(scheduleItem => scheduleItem.status !== "free");
     }
 
     isBean30(time: moment.Moment = moment()) : boolean {
