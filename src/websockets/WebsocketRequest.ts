@@ -90,6 +90,7 @@ abstract class WebsocketRequest {
                 ws.on('message', this.getHandleMessage(resolve));
                 ws.on('error', reject);
             })
+                .finally(() => ws.close())
         } else {
             return this.get();
         }
