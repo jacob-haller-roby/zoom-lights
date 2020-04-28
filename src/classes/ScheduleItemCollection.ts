@@ -29,7 +29,7 @@ export default class ScheduleItemCollection  {
         let start = moment();
         let end = moment().add(duration);
         return this.scheduleItems.some(scheduleItem => {
-            scheduleItem.subject != "It's Bean 30!" &&
+            return scheduleItem.subject != "It's Bean 30!" &&
             (<moment.Moment>scheduleItem.start).isBetween(start, end)
         });
     }
