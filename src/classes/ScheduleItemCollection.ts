@@ -51,11 +51,12 @@ export default class ScheduleItemCollection  {
         }))
     }
 
-    clearCurrentMeetings() : void {
+    clearCurrentMeetings(gracePeriod: moment.Duration = moment.duration(5, "minutes")) : void {
         this.scheduleItems = this.scheduleItems.filter(scheduleItem => {
-            return !(
-                (<moment.Moment>scheduleItem.start).isSameOrBefore(moment()) &&
-                (<moment.Moment>scheduleItem.end).isAfter(moment())
+            return scheduleItem.subject != "It's Bean 30!" &&
+            !(
+                (<moment.Moment>scheduleItem.start).isSameOrBefore(moment().subtract(gracePeriod)) &&
+                (<moment.Moment>scheduleItem.end).isAfter(moment().add(gracePeriod))
             );
         })
     }
