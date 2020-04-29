@@ -55,8 +55,8 @@ export default class ScheduleItemCollection  {
         this.scheduleItems = this.scheduleItems.filter(scheduleItem => {
             return scheduleItem.subject != "It's Bean 30!" &&
             !(
-                (<moment.Moment>scheduleItem.start).isSameOrBefore(moment().subtract(gracePeriod)) &&
-                (<moment.Moment>scheduleItem.end).isAfter(moment().add(gracePeriod))
+                (<moment.Moment>scheduleItem.start).isSameOrBefore(moment().add(gracePeriod)) &&
+                (<moment.Moment>scheduleItem.end).isAfter(moment().subtract(gracePeriod))
             );
         })
     }
