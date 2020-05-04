@@ -9,6 +9,24 @@ export default class ScheduleItemCollection  {
             .filter(scheduleItem => scheduleItem.status !== "free");
     }
 
+    apply(scheduleItemCollection: ScheduleItemCollection) : ScheduleItemCollection {
+
+        let newItems = scheduleItemCollection.scheduleItems.filter((scheduleItem : ScheduleItem) => {
+            return (<moment.Moment>scheduleItem.start).isAfter(moment()) &&
+                !this.contains(scheduleItem)
+        })
+
+        this.scheduleItems.push(...newItems);
+        return this;
+    }
+
+    contains(scheduleItem: ScheduleItem) : boolean {
+        return this.scheduleItems.some((existingItem : ScheduleItem) => {
+            return existingItem.subject === scheduleItem.subject
+                && existingItem.start === scheduleItem.start
+        });
+    }
+
     isBean30(time: moment.Moment = moment()) : boolean {
         return this.scheduleItems.some((scheduleItem : ScheduleItem) => {
             return scheduleItem.subject === "It's Bean 30!" &&

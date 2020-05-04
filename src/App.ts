@@ -89,7 +89,7 @@ class App {
         } else if (!isSlackAvailable) {
             //Outside office hours.  Happy light for free time
             return Program.Options.NO_MORE_WORK;
-        } else if (meetings.hasMeeting()) {
+        } else if (meetings.hasMeeting(moment().subtract(30, "seconds"))) {
             //Should be in a meeting!! Hurry up!
             return Program.Options.ACAB;
         } else if (meetings.meetingStartingSoon()) {
