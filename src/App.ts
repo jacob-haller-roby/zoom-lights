@@ -83,13 +83,13 @@ class App {
             //In a meeting. ACAB
             if(this.activeProgramName !== Program.Options.DO_NOT_DISTURB){
                 //remove current meetings only when first joining
-                meetings.clearCurrentMeetings();
+                meetings && meetings.clearCurrentMeetings();
             }
             return Program.Options.DO_NOT_DISTURB;
         } else if (!isSlackAvailable) {
             //Outside office hours.  Happy light for free time
             return Program.Options.NO_MORE_WORK;
-        } else if (meetings.hasMeeting(moment().subtract(30, "seconds"))) {
+        } else if (meetings.hasMeeting()) {
             //Should be in a meeting!! Hurry up!
             return Program.Options.ACAB;
         } else if (meetings.meetingStartingSoon()) {

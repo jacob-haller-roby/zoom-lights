@@ -2,6 +2,7 @@ import ScheduleItem from "./ScheduleItem";
 import moment from "moment";
 
 export default class ScheduleItemCollection  {
+    private meetingStartGracePeriod : moment.Duration = moment.duration(30, "seconds");
     scheduleItems: Array<ScheduleItem>;
 
     constructor(scheduleItems: Array<ScheduleItem>) {
@@ -36,16 +37,17 @@ export default class ScheduleItemCollection  {
     }
 
     hasMeeting(time: moment.Moment = moment()) : boolean {
+        let graceAdjustedTime = time.subtract(this.meetingStartGracePeriod);
         return this.scheduleItems.some((scheduleItem : ScheduleItem) => {
             return scheduleItem.subject != "It's Bean 30!" &&
-                (<moment.Moment>scheduleItem.start).isSameOrBefore(time) &&
-                (<moment.Moment>scheduleItem.end).isAfter(time);
+                (<moment.Moment>scheduleItem.start).isSameOrBefore(graceAdjustedTime) &&
+                (<moment.Moment>scheduleItem.end).isAfter(graceAdjustedTime);
         });
     }
 
     meetingStartingSoon(duration: moment.Duration = moment.duration(15, "minutes")) : boolean {
-        let start = moment();
-        let end = moment().add(duration);
+        let start = moment().subtract(this.meetingStartGracePeriod);
+        let end = moment().add(duration).subtract(this.meetingStartGracePeriod);
         return this.scheduleItems.some(scheduleItem => {
             return scheduleItem.subject != "It's Bean 30!" &&
             (<moment.Moment>scheduleItem.start).isBetween(start, end)
